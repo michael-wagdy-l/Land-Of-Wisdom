@@ -125,49 +125,94 @@
             }
         }
     </style>
+    <meta name="csrf-token" content="{{ csrf_token }}">
 </head>
 <body>
-    <div class="container">
-        <img src="C:\Users\Michael\Downloads\Default_a_kind_man_with_lower_body_of_bull_and_smile_medieval_2.jpg" alt="Character" class="character-image">
-        <img src="logo.jpg" alt="Logo" class="logo-image">
-        <h1>Land of Wisdom</h1>
-        <p>Embark on a journey through time with Orion, our medieval chatbot. Explore the rich tapestry of history, mythology, and legends. Ask questions, seek wisdom, and unravel the mysteries of the past.</p>
-        <div class="chat-window" id="chat-window">
-            <!-- Chat messages will appear here -->
-        </div>
-        <div class="chat-input">
-            <input type="text" id="user-input" placeholder="Ask your question..." onkeypress="handleKeyPress(event)">
-            <button onclick="sendMessage()">Send</button>
-        </div>
+<div class="container">
+    <img src="C:\Users\Michael\Downloads\Default_a_kind_man_with_lower_body_of_bull_and_smile_medieval_2.jpg"
+         alt="Character" class="character-image">
+    <img src="logo.jpg" alt="Logo" class="logo-image">
+    <h1>Land of Wisdom</h1>
+    <p>Embark on a journey through time with Orion, our medieval chatbot. Explore the rich tapestry of history,
+        mythology, and legends. Ask questions, seek wisdom, and unravel the mysteries of the past.</p>
+    <div class="chat-window" id="chat-window">
+        <!-- Chat messages will appear here -->
     </div>
-    <script>
-        function handleKeyPress(event) {
-            if (event.key === 'Enter') {
-                sendMessage();
+    <div class="chat-input">
+        <input type="text" id="user-input" placeholder="Ask your question..." onkeypress="handleKeyPress(event)">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
             }
         }
+        return cookieValue;
+    }
 
-        function sendMessage() {
-            const userInput = document.getElementById('user-input');
-            const message = userInput.value.trim();
-            if (message) {
-                appendMessage('You', message, 'user-message');
-                userInput.value = '';
-                // Simulate chatbot response
-                setTimeout(() => {
-                    appendMessage('Orion', `You asked: "${message}". Here is some medieval wisdom...`, 'bot-message');
-                }, 1000);
-            }
-        }
+    const csrftoken = document.querySelector('[name=csrf-token]').content;
 
-        function appendMessage(sender, message, className) {
-            const chatWindow = document.getElementById('chat-window');
-            const messageElement = document.createElement('div');
-            messageElement.className = `message ${className}`;
-            messageElement.textContent = `${sender}: ${message}`;
-            chatWindow.appendChild(messageElement);
-            chatWindow.scrollTop = chatWindow.scrollHeight;
+    function handleKeyPress(event) {
+        if (event.key === 'Enter') {
+            sendMessage();
         }
-    </script>
+    }
+
+    function sendMessage() {
+        const userInput = document.getElementById('user-input');
+        const message = userInput.value.trim();
+        if (message) {
+            appendMessage('You', message, 'user-message');
+            userInput.value = '';
+
+            // Send POST request to the server
+            fetch('http://127.0.0.1:8000/chatbot', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                body: JSON.stringify({ message: message }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data && data.response) {
+                    appendMessage('Orion', data.response, 'bot-message');
+                } else {
+                    throw new Error('Invalid response format');
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                appendMessage('Orion', 'Sorry, there was an error processing your request.', 'bot-message');
+            });
+        }
+    }
+
+    function appendMessage(sender, message, className) {
+        const chatWindow = document.getElementById('chat-window');
+        const messageElement = document.createElement('div');
+        messageElement.className = `message ${className}`;
+        messageElement.textContent = `${sender}: ${message}`;
+        chatWindow.appendChild(messageElement);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+</script>
+
 </body>
 </html>

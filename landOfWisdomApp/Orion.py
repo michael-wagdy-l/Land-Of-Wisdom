@@ -1,6 +1,6 @@
 import os
 import google.generativeai as genai
-from landOfWisdom.landOfWisdomApp.oAuth import OAuth
+from landOfWisdomApp.oAuth import OAuth
 
 class Orion:
     def __init__(self):
@@ -37,7 +37,7 @@ class Orion:
         }
         return response
 
-# Example usage:
-orion = Orion()
-response = orion.take_message("helo")
-print(response)
+# # Example usage:
+# orion = Orion()
+# response = orion.take_message("helo")
+# print(response)
