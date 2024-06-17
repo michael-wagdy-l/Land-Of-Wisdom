@@ -39,5 +39,5 @@ class Orion:
 
 # # Example usage:
 # orion = Orion()
-# response = orion.take_message("helo")
+# response = orion.take_message("15")
 # print(response)

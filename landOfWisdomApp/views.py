@@ -1,4 +1,6 @@
-from django.http import HttpResponse, JsonResponse
+import json
+
+from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from django.shortcuts import render
 from landOfWisdomApp.Orion import Orion
 
@@ -11,7 +13,15 @@ def orion(request):
 
 
 def chatbot(request):
-    orion = Orion()
-    response = orion.take_message(request.POST.get("user-input"))
+    if request.method == 'POST':
+        try:
+            # Parse the JSON data from the request body
+            data = json.loads(request.body)
+            # Extract the 'message' field from the JSON data
+            message = data.get('message')
+            orion = Orion()
+            response = orion.take_message(message)
+        except json.JSONDecodeError:
+            return HttpResponseBadRequest('Invalid JSON data')
 
     return JsonResponse(response, status=200)

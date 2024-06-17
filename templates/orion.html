@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+{% load static %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -93,16 +94,16 @@
             position: absolute;
             top: 20px;
             left: 50px;
-            width: 80px;
-            height: 80px;
+            max-width: 15%; /* Adjust the percentage */
+            max-height: 15%; /* Adjust the percentage */
             border-radius: 50%;
         }
         .logo-image {
             position: absolute;
             top: 20px;
             right: -50px;
-            width: 80px;
-            height: 80px;
+            max-width: 15%; /* Adjust the percentage */
+            max-height: 15%; /* Adjust the percentage */
         }
         @media (max-width: 600px) {
             h1 {
@@ -117,10 +118,10 @@
             }
             .character-image,
             .logo-image {
-                width: 60px;
-                height: 60px;
+                max-width: 15%; /* Adjust the percentage */
+                max-height: 15%; /* Adjust the percentage */
                 top: 10px;
-                left: -30px;
+                left: 10px;
                 right: -30px;
             }
         }
@@ -128,10 +129,10 @@
     <meta name="csrf-token" content="{{ csrf_token }}">
 </head>
 <body>
+{% load static %}
 <div class="container">
-    <img src="C:\Users\Michael\Downloads\Default_a_kind_man_with_lower_body_of_bull_and_smile_medieval_2.jpg"
-         alt="Character" class="character-image">
-    <img src="logo.jpg" alt="Logo" class="logo-image">
+    <img src="{% static 'images/orion.jpg' %}" alt="Character" class="character-image">
+    <img src="{% static 'images/logo.jpg' %}" alt="Logo" class="logo-image">
     <h1>Land of Wisdom</h1>
     <p>Embark on a journey through time with Orion, our medieval chatbot. Explore the rich tapestry of history,
         mythology, and legends. Ask questions, seek wisdom, and unravel the mysteries of the past.</p>
@@ -175,8 +176,11 @@
             appendMessage('You', message, 'user-message');
             userInput.value = '';
 
+            // Get the host URL dynamically
+            const host = window.location.origin;
+
             // Send POST request to the server
-            fetch('http://127.0.0.1:8000/chatbot', {
+            fetch(`${host}/chatbot`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -213,6 +217,5 @@
         chatWindow.scrollTop = chatWindow.scrollHeight;
     }
 </script>
-
 </body>
 </html>
